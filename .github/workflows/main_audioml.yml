@@ -60,6 +60,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
+      - name: Debug: list workspace after download
+        run: |
+          echo "Workspace: $(pwd)"
+          ls -la
+          echo "If a 'flask-quickstart' folder exists, list it:" 
+          if [ -d flask-quickstart ]; then ls -la flask-quickstart; fi
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -71,8 +77,9 @@ jobs:
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
+        working-directory: flask-quickstart
         with:
           app-name: 'audioml'
           slot-name: 'Production'
-          package: './flask-quickstart'
+          package: '.'
           
