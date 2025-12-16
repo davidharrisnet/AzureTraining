@@ -31,9 +31,7 @@ jobs:
         run: |
           python -m venv antenv
           source antenv/bin/activate
-          pip freeze >  requirements.txt
-          pip install -r ./requirements.txt
-                
+                          
       # By default, when you enable GitHub CI/CD integration through the Azure portal, the platform automatically sets the SCM_DO_BUILD_DURING_DEPLOYMENT application setting to true. This triggers the use of Oryx, a build engine that handles application compilation and dependency installation (e.g., pip install) directly on the platform during deployment. Hence, we exclude the antenv virtual environment directory from the deployment artifact to reduce the payload size. 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -42,7 +40,9 @@ jobs:
           path: |
             flask-quickstart
             !flask-quickstart/antenv/
-
+      - bash: ls -R $(Build.SourcesDirectory)
+        displayName: 'Display all files for debugging'
+      
       # 🚫 Opting Out of Oryx Build
       # If you prefer to disable the Oryx build process during deployment, follow these steps:
       # 1. Remove the SCM_DO_BUILD_DURING_DEPLOYMENT app setting from your Azure App Service Environment variables.
@@ -61,12 +61,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
-      - name: Debug: list workspace after download
-        run: |
-          echo "Workspace: $(pwd)"
-          ls -la
-          echo "If a 'flask-quickstart' folder exists, list it:" 
-          if [ -d flask-quickstart ]; then ls -la flask-quickstart; fi
       
       - name: Login to Azure
         uses: azure/login@v2
